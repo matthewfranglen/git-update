@@ -26,24 +26,24 @@ is_dirty () {
 # This will issue the current location to STDOUT. Capture it and pass it to
 # restore_location once the update is complete.
 get_location () {
-
+    echo
 }
 
 # This takes a SHA or branch name and will move to that location.
 restore_location () {
-
+    echo
 }
 
 # This provides a list of the branches which track remotes.
 list_branches () {
-
+    echo
 }
 
 # This takes a branch name. This will check that branch out and then update it.
 # The return status of this is the success of the pull. This will not rebase or
 # merge, only updates which resolve as fast-forwards will be accepted.
 update_branch () {
-
+    echo
 }
 
 update_branches () {

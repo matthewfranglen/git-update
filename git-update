@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# This will update all of the branches which track remotes in the current
+# repository. This will restore HEAD to the original location after that has
+# completed.
+
+# If an error occurs then the error will be prominently displayed and HEAD will
+# be returned to the original location.
+
+# This supports HEAD being on a branch or in a detached state.
+
+# This will issue the current location to STDOUT. Capture it and pass it to
+# restore_location once the update is complete.
+get_location () {
+
+}
+
+# This takes a SHA or branch name and will move to that location.
+restore_location () {
+
+}
+
+# This provides a list of the branches which track remotes.
+list_branches () {
+
+}
+
+# This takes a branch name. This will check that branch out and then update it.
+# The return status of this is the success of the pull. This will not rebase or
+# merge, only updates which resolve as fast-forwards will be accepted.
+update_branch () {
+
+}
+
+update_branches () {
+    for branch in $(list_branches)
+    do
+        update_branch "$branch"
+        [ $? -ne 0 ] && return $?
+    done
+}
+
+original_location=$(get_location)
+
+update_branches
+status=$?
+
+restore_location "$original_location"
+return $status
+
+# vim: set ai et sw=4 syntax=sh :

@@ -69,7 +69,7 @@ list_branches () {
 # The return status of this is the success of the pull. This will not rebase or
 # merge, only updates which resolve as fast-forwards will be accepted.
 update_branch () {
-    git checkout $1 && git pull
+    git checkout $1 && git pull --rebase
 }
 
 # Updates all branches, stopping at the first one that fails.

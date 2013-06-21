@@ -24,28 +24,55 @@ is_dirty () {
 }
 
 # This will issue the current location to STDOUT. Capture it and pass it to
-# restore_location once the update is complete.
+# restore_location once the update is complete. If the current HEAD is not on a
+# branch tip then this will return the sha of the commit, unfortunately that
+# will result in a detached head (but that should be no change from the current
+# state).
 get_location () {
-    echo
+    # See http://stackoverflow.com/a/4535867
+    sha=$(git log --pretty="%H" -n 1)
+    for branch in $(git branch --contains $sha)
+    do
+        if [ $(git rev-list -n 1 $branch) = $sha ]
+        then
+            echo $branch
+            return
+        fi
+    done
+    echo $sha
 }
 
 # This takes a SHA or branch name and will move to that location.
 restore_location () {
-    echo
+    git checkout "$1"
 }
 
 # This provides a list of the branches which track remotes.
 list_branches () {
-    echo
+    # git version >= 1.7.0 can use
+    # git rev-parse --symbolic-full-name my-branch@{upstream}
+    # which will then display the full name of the remote branch when
+    # successfully completed (check status). However I am not comfortable
+    # relying on such a recent version, as plenty of dists use older versions.
+    # Thus the command just checks the config for the remote section (which
+    # itself just reads .git/config)
+
+    # If you like functional zsh, then these commands are *ideal* for filtering.
+
+    for branch in $(git branch)
+    do
+        git config branch.$branch.remote >/dev/null && echo $branch
+    done
 }
 
 # This takes a branch name. This will check that branch out and then update it.
 # The return status of this is the success of the pull. This will not rebase or
 # merge, only updates which resolve as fast-forwards will be accepted.
 update_branch () {
-    echo
+    git checkout $1 && git pull
 }
 
+# Updates all branches, stopping at the first one that fails.
 update_branches () {
     for branch in $(list_branches)
     do

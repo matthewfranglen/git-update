@@ -65,6 +65,6 @@ update_branches
 status=$?
 
 restore_location "$original_location"
-return $status
+exit $status
 
 # vim: set ai et sw=4 syntax=sh :

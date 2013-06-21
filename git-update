@@ -31,9 +31,9 @@ is_dirty () {
 get_location () {
     # See http://stackoverflow.com/a/4535867
     sha=$(git log --pretty="%H" -n 1)
-    for branch in $(git branch --contains $sha)
+    for branch in $(git branch --contains $sha | sed -e 's/\*//')
     do
-        if [ $(git rev-list -n 1 $branch) = $sha ]
+        if [ "$(git rev-list -n 1 $branch)" = "$sha" ]
         then
             echo $branch
             return

@@ -66,8 +66,9 @@ list_branches () {
 }
 
 # This takes a branch name. This will check that branch out and then update it.
-# The return status of this is the success of the pull. This will not rebase or
-# merge, only updates which resolve as fast-forwards will be accepted.
+# The return status of this is the success of the pull. This will rebase any
+# existing work on this branch after the commits that have been pulled, which
+# will keep the history as clean as possible.
 update_branch () {
     git checkout $1 && git pull --rebase
 }

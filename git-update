@@ -43,8 +43,12 @@ get_location () {
 }
 
 # This takes a SHA or branch name and will move to that location.
-restore_location () {
-    git checkout "$1"
+set_location () {
+    if [ "$1" != "$current_location" ]
+    then
+        git checkout "$1"
+        current_location=$1
+    fi
 }
 
 # This provides a list of the branches which track remotes.
@@ -70,7 +74,7 @@ list_branches () {
 # existing work on this branch after the commits that have been pulled, which
 # will keep the history as clean as possible.
 update_branch () {
-    git checkout $1 && git pull --rebase
+    set_location $1 && git pull --rebase
 }
 
 # Updates all branches, stopping at the first one that fails.
@@ -93,11 +97,12 @@ then
     exit 1
 fi
 original_location=$(get_location)
+current_location=$original_location
 
 update_branches
 status=$?
 
-restore_location "$original_location"
+set_location "$original_location"
 exit $status
 
 # vim: set ai et sw=4 syntax=sh :

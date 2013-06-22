@@ -29,17 +29,21 @@ is_dirty () {
 # will result in a detached head (but that should be no change from the current
 # state).
 get_location () {
-    # See http://stackoverflow.com/a/4535867
-    sha=$(git log --pretty="%H" -n 1)
-    for branch in $(git branch --contains $sha | sed -e 's/\*//')
-    do
-        if [ "$(git rev-list -n 1 $branch)" = "$sha" ]
-        then
-            echo $branch
-            return
-        fi
-    done
-    echo $sha
+    # See http://stackoverflow.com/a/12142066
+    # I personally think that the rev-parse method is cleaner:
+    # branch=$(git rev-parse --abbrev-ref HEAD)
+    # When not on a branch it just returns HEAD. Unfortunately it is not
+    # possible to distinguish between a branch named HEAD and a detached head
+    # state, so must resort to:
+    branch=$(git branch | awk ' (! /no branch/) && /\* / { print $2 } ')
+    if [ -n "$branch" ]
+    then
+        echo $branch
+        return
+    fi
+
+    # This gets the sha of the current commit
+    git log --pretty="%H" -n 1
 }
 
 # This takes a SHA or branch name and will move to that location.

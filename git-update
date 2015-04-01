@@ -73,6 +73,25 @@ list_branches () {
     done
 }
 
+is_branch_tracking_remote () {
+    local branch=$1
+
+    git config branch.${branch}.remote >/dev/null
+}
+
+is_branch_behind_remote () {
+    local branch=$1
+
+    # See http://stackoverflow.com/a/2970101
+
+    local full_local_branch=refs/heads/${branch}
+    local remote_ref=$(git config branch.${branch}.merge)
+    local remote_branch=${remote_ref#refs/heads/}
+    local full_remote_branch=refs/remotes/$(git config branch.${branch}.remote)/${remote_branch}
+
+    [ $(git rev-list ${full_remote_branch}..${full_local_branch}) != "" ]
+}
+
 # This takes a branch name. This will check that branch out and then update it.
 # The return status of this is the success of the pull. This will rebase any
 # existing work on this branch after the commits that have been pulled, which

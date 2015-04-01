@@ -23,6 +23,10 @@ is_dirty () {
             [ -n "$(git ls-files --others --exclude-standard)" ]
 }
 
+fetch_changes () {
+    git fetch --all
+}
+
 # This will issue the current location to STDOUT. Capture it and pass it to
 # restore_location once the update is complete. If the current HEAD is not on a
 # branch tip then this will return the sha of the commit, unfortunately that
@@ -125,7 +129,7 @@ fi
 original_location=$(get_location)
 current_location=$original_location
 
-update_branches
+fetch_changes && update_branches
 status=$?
 
 set_location "$original_location"

@@ -69,7 +69,10 @@ list_branches () {
 
     for branch in $(git branch)
     do
-        git config branch.$branch.remote >/dev/null && echo $branch
+        if is_branch_tracking_remote "${branch}" && is_branch_behind_remote "${branch}"
+        then
+            git config branch.$branch.remote >/dev/null && echo $branch
+        fi
     done
 }
 

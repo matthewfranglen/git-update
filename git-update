@@ -96,7 +96,7 @@ is_branch_behind_remote () {
     local remote_branch=${remote_ref#refs/heads/}
     local full_remote_branch=refs/remotes/$(git config branch.${branch}.remote)/${remote_branch}
 
-    [ "$(git rev-list ${full_remote_branch}..${full_local_branch})" != "" ]
+    [ "$(git rev-list ${full_local_branch}..${full_remote_branch})" != "" ]
 }
 
 # This takes a branch name. This will check that branch out and then update it.

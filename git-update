@@ -71,7 +71,7 @@ list_branches () {
 
     # If you like functional zsh, then these commands are *ideal* for filtering.
 
-    for branch in $(git branch)
+    for branch in $(git branch | sed -e 's/^\*//')
     do
         if is_branch_tracking_remote "${branch}" && is_branch_behind_remote "${branch}"
         then

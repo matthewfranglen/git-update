@@ -23,6 +23,10 @@ is_dirty () {
             [ -n "$(git ls-files --others --exclude-standard)" ]
 }
 
+fetch_changes () {
+    git fetch --all
+}
+
 # This will issue the current location to STDOUT. Capture it and pass it to
 # restore_location once the update is complete. If the current HEAD is not on a
 # branch tip then this will return the sha of the commit, unfortunately that
@@ -67,10 +71,32 @@ list_branches () {
 
     # If you like functional zsh, then these commands are *ideal* for filtering.
 
-    for branch in $(git branch)
+    for branch in $(git branch | sed -e 's/^\*//')
     do
-        git config branch.$branch.remote >/dev/null && echo $branch
+        if is_branch_tracking_remote "${branch}" && is_branch_behind_remote "${branch}"
+        then
+            git config branch.$branch.remote >/dev/null && echo $branch
+        fi
     done
+}
+
+is_branch_tracking_remote () {
+    local branch=$1
+
+    git config branch.${branch}.remote >/dev/null
+}
+
+is_branch_behind_remote () {
+    local branch=$1
+
+    # See http://stackoverflow.com/a/2970101
+
+    local full_local_branch=refs/heads/${branch}
+    local remote_ref=$(git config branch.${branch}.merge)
+    local remote_branch=${remote_ref#refs/heads/}
+    local full_remote_branch=refs/remotes/$(git config branch.${branch}.remote)/${remote_branch}
+
+    [ "$(git rev-list ${full_local_branch}..${full_remote_branch})" != "" ]
 }
 
 # This takes a branch name. This will check that branch out and then update it.
@@ -103,7 +129,7 @@ fi
 original_location=$(get_location)
 current_location=$original_location
 
-update_branches
+fetch_changes && update_branches
 status=$?
 
 set_location "$original_location"
